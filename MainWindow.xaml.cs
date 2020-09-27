@@ -19,6 +19,9 @@ using System.Net.Http;
 //Timer
 using System.Threading;
 using System.Windows.Threading;
+using System.Net;
+using System.IO;
+
 
 namespace navbat
 {
@@ -29,6 +32,9 @@ namespace navbat
     {
         private DispatcherTimer timer = null;
         private int x;
+
+        private static readonly HttpClient client = new HttpClient();
+
 
         private void timerStart()
         {
@@ -42,12 +48,39 @@ namespace navbat
         {
             Console.WriteLine("Timer is Fired!");
             x++;
+            makeHttp();
+        }
+
+        public void makeHttp()
+        {
+            string url = "http://192.168.233.96:3000/results";
+            using (var wb = new WebClient())
+            {
+                Console.WriteLine("Http get is fired!");
+                var response = wb.DownloadString(url);
+                Console.WriteLine("Http get response is received!");
+                Console.WriteLine(response);
+            }
         }
 
         public MainWindow()
         {
             InitializeComponent();
             timerStart();
+
+        }
+
+        public async Task<string> GetAsync(string uri)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return await reader.ReadToEndAsync();
+            }
         }
 
 
