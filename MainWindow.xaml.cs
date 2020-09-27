@@ -22,6 +22,7 @@ using System.Windows.Threading;
 using System.Net;
 using System.IO;
 
+using Newtonsoft.Json;
 
 namespace navbat
 {
@@ -66,7 +67,16 @@ namespace navbat
         public MainWindow()
         {
             InitializeComponent();
-            timerStart();
+            //timerStart();
+
+
+            dynamic stuff = JsonConvert.DeserializeObject("{ 'Name': 'Jon Smith', 'Address': { 'City': 'New York', 'State': 'NY' }, 'Age': 42 }");
+
+            string name = stuff.Name;
+            string address = stuff.Address.City;
+            Console.WriteLine(name);
+            Console.WriteLine(address);
+
 
         }
 
