@@ -29,6 +29,9 @@ namespace navbat
 {
     public partial class MainWindow : Window
     {
+        const int port = 8888;
+        static TcpListener listener;
+
         private DispatcherTimer timer = null;
 
         //shuhrat
@@ -62,16 +65,21 @@ namespace navbat
             loopTimer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             loopTimer.Start();
 
-
             // tcp
             thread.Start();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            operator_1(0,0,0);
-            operator_2(0,0,0);
-            operator_3(0,0,0);
+            counter_1_1 = 0;
+            counter_1_2 = 0;
+            counter_1_3 = 0;
+            counter_2_1 = 0;
+            counter_2_2 = 0;
+            counter_2_3 = 0;
+            counter_3_1 = 0;
+            counter_3_2 = 0;
+            counter_3_3 = 0;
         }
 
         //shuhrat
@@ -118,8 +126,38 @@ namespace navbat
         Thread thread = new Thread(() =>
         {
             // put the code here that you want to be executed in a new thread
-            mytcpserver();
+            //mytcpserver();
+            multiClientTcpTask();
         });
+
+        public static void multiClientTcpTask()
+        {
+            try
+            {
+                listener = new TcpListener(IPAddress.Parse("0.0.0.0"), port);
+                listener.Start();
+                Console.WriteLine("Ожидание подключений...");
+
+                while (true)
+                {
+                    TcpClient client = listener.AcceptTcpClient();
+                    ClientObject clientObject = new ClientObject(client);
+
+                    // создаем новый поток для обслуживания нового клиента
+                    Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
+                    clientThread.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (listener != null)
+                    listener.Stop();
+            }
+        }
 
         public static void mytcpserver()
         {
@@ -164,43 +202,34 @@ namespace navbat
                         data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
                         Console.WriteLine("Received: {0}", data);
 
-
                         switch(data[0])
                         {
                             case '1':
-
                                 switch (data[9])
                                 {
                                     case '0': counter_1_1++; break;
                                     case '5': counter_2_1++; break;
                                     case '9': counter_3_1++; break;
                                 }
-
                                 break;
 
                             case '2':
-
                                 switch (data[9])
                                 {
                                     case '0': counter_1_2++; break;
                                     case '5': counter_2_2++; break;
                                     case '9': counter_3_2++; break;
                                 }
-
                                 break;
 
                             case '3':
-
                                 switch (data[9])
                                 {
                                     case '0': counter_1_3++; break;
                                     case '5': counter_2_3++; break;
                                     case '9': counter_3_3++; break;
                                 }
-
                                 break;
-
-
                         }
                     }
 
@@ -219,6 +248,50 @@ namespace navbat
             }
 
             Console.WriteLine("\nHit enter to continue...");
+        }
+    }
+
+    public class ClientObject
+    {
+        public TcpClient client;
+        public ClientObject(TcpClient tcpClient)
+        {
+            client = tcpClient;
+        }
+
+        public void Process()
+        {
+            NetworkStream stream = null;
+            try
+            {
+                stream = client.GetStream();
+                Byte[] bytes = new Byte[256];
+                String data = null;
+                while (true)
+                {
+                    data = null;
+                    int i;
+
+                    // Loop to receive all the data sent by the client.
+                    while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                    {
+                        // Translate data bytes to a ASCII string.
+                        data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                        Console.WriteLine("Received: {0}", data);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+                if (client != null)
+                    client.Close();
+            }
         }
     }
 }
