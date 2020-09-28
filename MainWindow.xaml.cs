@@ -29,7 +29,7 @@ namespace navbat
 {
     public partial class MainWindow : Window
     {
-        const int port = 8888;
+        const int port = 4567;
         static TcpListener listener;
 
         private DispatcherTimer timer = null;
@@ -158,97 +158,6 @@ namespace navbat
                     listener.Stop();
             }
         }
-
-        public static void mytcpserver()
-        {
-            TcpListener server = null;
-            try
-            {
-                // Set the TcpListener on port 13000.
-                Int32 port = 4567;
-                IPAddress localAddr = IPAddress.Parse("0.0.0.0");
-
-                // TcpListener server = new TcpListener(port);
-                server = new TcpListener(localAddr, port);
-
-                // Start listening for client requests.
-                server.Start();
-
-                // Buffer for reading data
-                Byte[] bytes = new Byte[256];
-                String data = null;
-
-                // Enter the listening loop.
-                while (true)
-                {
-                    Console.Write("Waiting for a connection... ");
-
-                    // Perform a blocking call to accept requests.
-                    // You could also use server.AcceptSocket() here.
-                    TcpClient client = server.AcceptTcpClient();
-                    Console.WriteLine("Connected!");
-
-                    data = null;
-
-                    // Get a stream object for reading and writing
-                    NetworkStream stream = client.GetStream();
-
-                    int i;
-
-                    // Loop to receive all the data sent by the client.
-                    while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
-                    {
-                        // Translate data bytes to a ASCII string.
-                        data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-                        Console.WriteLine("Received: {0}", data);
-
-                        switch(data[0])
-                        {
-                            case '1':
-                                switch (data[9])
-                                {
-                                    case '0': counter_1_1++; break;
-                                    case '5': counter_2_1++; break;
-                                    case '9': counter_3_1++; break;
-                                }
-                                break;
-
-                            case '2':
-                                switch (data[9])
-                                {
-                                    case '0': counter_1_2++; break;
-                                    case '5': counter_2_2++; break;
-                                    case '9': counter_3_2++; break;
-                                }
-                                break;
-
-                            case '3':
-                                switch (data[9])
-                                {
-                                    case '0': counter_1_3++; break;
-                                    case '5': counter_2_3++; break;
-                                    case '9': counter_3_3++; break;
-                                }
-                                break;
-                        }
-                    }
-
-                    // Shutdown and end connection
-                    client.Close();
-                }
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine("SocketException: {0}", e);
-            }
-            finally
-            {
-                // Stop listening for new clients.
-                server.Stop();
-            }
-
-            Console.WriteLine("\nHit enter to continue...");
-        }
     }
 
     public class ClientObject
@@ -278,6 +187,36 @@ namespace navbat
                         // Translate data bytes to a ASCII string.
                         data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
                         Console.WriteLine("Received: {0}", data);
+
+                        switch (data[0])
+                        {
+                            case '1':
+                                switch (data[9])
+                                {
+                                    case '0': MainWindow.counter_1_1++; break;
+                                    case '5': MainWindow.counter_2_1++; break;
+                                    case '9': MainWindow.counter_3_1++; break;
+                                }
+                                break;
+
+                            case '2':
+                                switch (data[9])
+                                {
+                                    case '0': MainWindow.counter_1_2++; break;
+                                    case '5': MainWindow.counter_2_2++; break;
+                                    case '9': MainWindow.counter_3_2++; break;
+                                }
+                                break;
+
+                            case '3':
+                                switch (data[9])
+                                {
+                                    case '0': MainWindow.counter_1_3++; break;
+                                    case '5': MainWindow.counter_2_3++; break;
+                                    case '9': MainWindow.counter_3_3++; break;
+                                }
+                                break;
+                        }
                     }
                 }
             }
