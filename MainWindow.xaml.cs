@@ -27,38 +27,15 @@ using System.Net.Sockets;
 
 namespace navbat
 {
-    struct Person
-    {
-        public string name;
-        public double aver;
-        public int number;
-    }
-
-
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        //public personal person;
-        //Data data;
-        public string[] names;
-        public double[] avers;
-        public int[] numbers;
-
-        List<string> this_is_a_list_of_strings = new List<string>();
-
         private DispatcherTimer timer = null;
-        private int x;
-
-        private static readonly HttpClient client = new HttpClient();
 
         //shuhrat
         DispatcherTimer loopTimer;
-        public static int counter_1_1, counter_1_2, counter_1_3, counter_1_4;
+        public static int counter_1_1, counter_1_2, counter_1_3;
         public static int counter_2_1, counter_2_2, counter_2_3;
         public static int counter_3_1, counter_3_2, counter_3_3;
-
 
         private void timerStart()
         {
@@ -71,61 +48,12 @@ namespace navbat
         private void timerTick(object sender, EventArgs e)
         {
             Console.WriteLine("Timer is Fired!");
-            x++;
-            //makeHttp();
-            //DoAcceptTcpClientCallback();
-            //MyTcpListener.mymain();
-
         }
-
-        public void makeHttp()
-        {
-            string url = "http://192.168.233.96:3000/results";
-            using (var wb = new WebClient())
-            {
-                Console.WriteLine("Http get is fired!");
-                var response = wb.DownloadString(url);
-                Console.WriteLine("Http get response is received!");
-                Console.WriteLine(response);
-            }
-        }
-
-        Thread thread = new Thread(() =>
-        {
-            // put the code here that you want to be executed in a new thread
-            mytcpserver();
-        });
 
         public MainWindow()
         {
             InitializeComponent();
-
             timerStart();
-
-            //data[0].name = "Akbar";
-
-            dynamic stuff = JsonConvert.DeserializeObject("{ 'Name': 'Jon Smith', 'Address': { 'City': 'New York', 'State': 'NY' }, 'Age': 42 }");
-
-            string name = stuff.Name;
-            string address = stuff.Address.City;
-
-
-            Console.WriteLine(name);
-            Console.WriteLine(address);
-
-            dynamic jsonResponce = JsonConvert.DeserializeObject("{ 'results': { 'name': 'Hasan', 'aver': '2.3', 'number': '105' } }");
-            //data[0].name = stuff.results.name;
-            //data[0].aver = stuff.results.aver;
-            //data[0].number = stuff.results.number;
-
-            //Console.WriteLine("this is decoded json");
-            //Console.WriteLine(data[0].name);
-            //Console.WriteLine(data[0].aver);
-            //Console.WriteLine(data[0].number);
-
-            //names[0] = stuff.results.name;
-            //avers[0] = stuff.results.aver;
-            //numbers[0] = stuff.results.number;
 
             //shuhrat
             // INIT LOOP TIMER
@@ -137,7 +65,6 @@ namespace navbat
 
             // tcp
             thread.Start();
-            // MyTcpListener.mymain();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -150,13 +77,10 @@ namespace navbat
         //shuhrat
         private void loopTimer_Tick(object sender, EventArgs e)
         {
-            counter_1_4++; //bu joyi test uchun
-
             operator_1(counter_1_1, counter_1_2, counter_1_3);
             operator_2(counter_2_1, counter_2_2, counter_2_3);
             operator_3(counter_3_1, counter_3_2, counter_3_3);
         }
-
         private void operator_1(int counter_1, int counter_2, int counter_3)
         {
             str_1_1.Text = counter_1.ToString();
@@ -191,6 +115,11 @@ namespace navbat
             }
         }
 
+        Thread thread = new Thread(() =>
+        {
+            // put the code here that you want to be executed in a new thread
+            mytcpserver();
+        });
 
         public static void mytcpserver()
         {
@@ -273,15 +202,6 @@ namespace navbat
 
 
                         }
-
-                        // Process the data sent by the client.
-                        //data = data.ToUpper();
-
-                        //byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
-
-                        //// Send back a response.
-                        //stream.Write(msg, 0, msg.Length);
-                        //Console.WriteLine("Sent: {0}", data);
                     }
 
                     // Shutdown and end connection
@@ -299,11 +219,6 @@ namespace navbat
             }
 
             Console.WriteLine("\nHit enter to continue...");
-            Console.Read();
         }
     }
-
-
-    
-
 }
