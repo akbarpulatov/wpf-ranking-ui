@@ -74,6 +74,7 @@
                     </TextBlock>
                 </Canvas>
             </GroupBox>
+            <Button Content="Reset" Canvas.Left="453" Canvas.Top="555" Width="75" Click="Button_Click"/>
         </Canvas>
     </Viewbox>
 </Window>

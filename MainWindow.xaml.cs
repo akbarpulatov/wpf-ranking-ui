@@ -55,9 +55,9 @@ namespace navbat
 
         //shuhrat
         DispatcherTimer loopTimer;
-        int counter_1_1, counter_1_2, counter_1_3;
-        int counter_2_1, counter_2_2, counter_2_3;
-        int counter_3_1, counter_3_2, counter_3_3;
+        public static int counter_1_1, counter_1_2, counter_1_3, counter_1_4;
+        public static int counter_2_1, counter_2_2, counter_2_3;
+        public static int counter_3_1, counter_3_2, counter_3_3;
 
 
         private void timerStart()
@@ -93,7 +93,7 @@ namespace navbat
         Thread thread = new Thread(() =>
         {
             // put the code here that you want to be executed in a new thread
-            MyTcpListener.mymain();
+            mytcpserver();
         });
 
         public MainWindow()
@@ -131,7 +131,7 @@ namespace navbat
             // INIT LOOP TIMER
             loopTimer = new DispatcherTimer();
             loopTimer.Tick += new EventHandler(loopTimer_Tick);
-            loopTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+            loopTimer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             loopTimer.Start();
 
 
@@ -140,10 +140,17 @@ namespace navbat
             // MyTcpListener.mymain();
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            operator_1(0,0,0);
+            operator_2(0,0,0);
+            operator_3(0,0,0);
+        }
+
         //shuhrat
         private void loopTimer_Tick(object sender, EventArgs e)
         {
-            counter_1_1++; //bu joyi test uchun
+            counter_1_4++; //bu joyi test uchun
 
             operator_1(counter_1_1, counter_1_2, counter_1_3);
             operator_2(counter_2_1, counter_2_2, counter_2_3);
@@ -185,17 +192,13 @@ namespace navbat
         }
 
 
-    }
-
-    class MyTcpListener
-    {
-        public static void mymain()
+        public static void mytcpserver()
         {
             TcpListener server = null;
             try
             {
                 // Set the TcpListener on port 13000.
-                Int32 port = 80;
+                Int32 port = 4567;
                 IPAddress localAddr = IPAddress.Parse("0.0.0.0");
 
                 // TcpListener server = new TcpListener(port);
@@ -232,6 +235,45 @@ namespace navbat
                         data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
                         Console.WriteLine("Received: {0}", data);
 
+
+                        switch(data[0])
+                        {
+                            case '1':
+
+                                switch (data[9])
+                                {
+                                    case '0': counter_1_1++; break;
+                                    case '5': counter_2_1++; break;
+                                    case '9': counter_3_1++; break;
+                                }
+
+                                break;
+
+                            case '2':
+
+                                switch (data[9])
+                                {
+                                    case '0': counter_1_2++; break;
+                                    case '5': counter_2_2++; break;
+                                    case '9': counter_3_2++; break;
+                                }
+
+                                break;
+
+                            case '3':
+
+                                switch (data[9])
+                                {
+                                    case '0': counter_1_3++; break;
+                                    case '5': counter_2_3++; break;
+                                    case '9': counter_3_3++; break;
+                                }
+
+                                break;
+
+
+                        }
+
                         // Process the data sent by the client.
                         //data = data.ToUpper();
 
@@ -260,5 +302,8 @@ namespace navbat
             Console.Read();
         }
     }
+
+
+    
 
 }
